@@ -413,7 +413,7 @@ export default function CompleteMode() {
             )}
 
             {/* Pregunta */}
-            {currentQuestion.pronoun && currentQuestion.tense && (
+            {currentQuestion && currentQuestion.pronoun && currentQuestion.tense && (
               <div className="text-center space-y-4">
                 <div className="text-lg text-muted-foreground">
                   <span className="font-semibold text-foreground">
@@ -445,18 +445,18 @@ export default function CompleteMode() {
             )}
 
             {/* Feedback */}
-            {phase === "feedback" && currentQuestion && (
+            {phase === "feedback" && currentQuestion && isCorrect !== null && (
               <div className="mt-6">
                 <FeedbackMessage
-                  type={isCorrect ? "correct" : "incorrect"}
-                  title={isCorrect ? "¡Correcto!" : "Incorrecto"}
+                  type={isCorrect === true ? "success" : "error"}
+                  title={isCorrect === true ? "¡Correcto!" : "Incorrecto"}
                   message={
-                    isCorrect
+                    isCorrect === true
                       ? "¡Bien hecho!"
-                      : getRandomEncouragement()
+                      : getRandomEncouragement("error")
                   }
                   correctAnswer={
-                    !isCorrect && currentQuestion.correctAnswer ? currentQuestion.correctAnswer : undefined
+                    isCorrect === false && currentQuestion.correctAnswer ? currentQuestion.correctAnswer : undefined
                   }
                 />
               </div>
