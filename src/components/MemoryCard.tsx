@@ -8,7 +8,8 @@ interface MemoryCardProps {
 }
 
 export function MemoryCard({ card, onClick, disabled }: MemoryCardProps) {
-  const isRevealed = card.isFlipped || card.isMatched;
+  // Las cartas resueltas siempre deben estar giradas
+  const isRevealed = card.isMatched || card.isFlipped;
 
   return (
     <div
@@ -19,9 +20,10 @@ export function MemoryCard({ card, onClick, disabled }: MemoryCardProps) {
         onClick={onClick}
         disabled={disabled || card.isMatched}
         className={cn(
-          "relative w-full h-full transition-transform duration-500 transform-style-preserve-3d cursor-pointer",
+          "relative w-full h-full transition-transform duration-500 transform-style-preserve-3d",
+          card.isMatched ? "cursor-default" : "cursor-pointer",
           isRevealed && "rotate-y-180",
-          card.isMatched && "opacity-80"
+          card.isMatched && "opacity-90"
         )}
         style={{
           transformStyle: "preserve-3d",
