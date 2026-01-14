@@ -37,5 +37,5 @@ export default defineConfig({
     },
   },
   
-  publicDir: false, // Desactivar publicDir para controlar manualmente los assets
+  publicDir: 'public', // Activar publicDir para servir manifest.json y favicon.png
 });
