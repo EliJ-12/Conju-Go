@@ -21,8 +21,8 @@ export default defineConfig({
     rollupOptions: {
       output: {
         assetFileNames: (assetInfo) => {
-          if (assetInfo.name === 'A2.png') {
-            return 'A2.png';
+          if (assetInfo.name === 'favicon.png') {
+            return 'favicon.png';
           }
           return 'assets/[name]-[hash][extname]';
         }
