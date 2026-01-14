@@ -13,12 +13,16 @@ export function useTheme() {
         console.log("localStorage no disponible, usando preferencia del sistema");
       }
       
-      // Detectar si estamos en una PWA/standalone mode
+      // Detectar si estamos en una PWA/standalone mode (Android e iOS)
       const isStandalone = window.matchMedia("(display-mode: standalone)").matches || 
-                          (window.navigator as any).standalone === true;
+                          (window.navigator as any).standalone === true ||
+                          window.matchMedia("(display-mode: minimal-ui)").matches;
       
-      // En modo standalone, preferir light theme por defecto para mejor visibilidad
-      if (isStandalone) {
+      // Detectar si es Android
+      const isAndroid = /android/i.test(navigator.userAgent);
+      
+      // En modo standalone o Android, preferir light theme por defecto para mejor visibilidad
+      if (isStandalone || isAndroid) {
         return "light";
       }
       

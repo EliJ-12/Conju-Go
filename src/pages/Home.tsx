@@ -1,5 +1,5 @@
 import { useLocation } from "wouter";
-import { BookOpen, Clock, Puzzle, Zap, PenTool, UserPlus } from "lucide-react";
+import { BookOpen, Clock, Puzzle, Zap, PenTool } from "lucide-react";
 import { GameModeCard } from "@/components/GameModeCard";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import { Badge } from "@/components/ui/badge";
@@ -66,10 +66,7 @@ export default function Home() {
       <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
         <div className="container mx-auto flex h-16 items-center justify-between gap-4 px-4 sm:px-6 lg:px-8">
           <div className="flex items-center gap-3">
-            <div className="flex items-center justify-center w-10 h-10 bg-primary rounded-lg shadow-sm">
-              <UserPlus className="h-5 w-5 text-primary-foreground" />
-            </div>
-            <span className="font-display font-bold text-xl sm:text-2xl text-primary">Conjugo</span>
+            <span className="font-display font-bold text-xl sm:text-2xl text-primary">ConjuGo</span>
           </div>
           <div className="flex items-center gap-3">
             <Badge variant="secondary" className="hidden sm:flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium">
@@ -138,7 +135,7 @@ export default function Home() {
 
       <footer className="border-t mt-16">
         <div className="container mx-auto px-4 py-6 text-center text-sm text-muted-foreground">
-          <p>Conjugo - Aprende francais de forma divertida</p>
+          <p>ConjuGo - Aprende francais de forma divertida</p>
         </div>
       </footer>
     </div>

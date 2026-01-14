@@ -19,11 +19,11 @@
   <meta name="theme-color" content="#1e40af" media="(prefers-color-scheme: dark)" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="default" />
-  <meta name="apple-mobile-web-app-title" content="Conjugo" />
+  <meta name="apple-mobile-web-app-title" content="ConjuGo" />
   <link rel="manifest" href="/manifest.json" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta name="description" content="Aprende verbos franceses jugando. Domina la conjugación francesa con juegos interactivos." />
-  <title>Conjugo - Aprende verbos franceses jugando</title>
+  <title>ConjuGo - Aprende verbos franceses jugando</title>
   <script>
     // Aplicar tema inmediatamente antes de que se renderice la página
     (function() {
@@ -33,10 +33,16 @@
         if (stored) {
           theme = stored;
         } else {
-          // Detectar modo standalone
+          // Detectar modo standalone (Android e iOS)
           var isStandalone = window.matchMedia('(display-mode: standalone)').matches || 
-                           window.navigator.standalone === true;
-          if (isStandalone) {
+                           window.navigator.standalone === true ||
+                           window.matchMedia('(display-mode: minimal-ui)').matches;
+          
+          // Detectar si es Android
+          var isAndroid = /android/i.test(navigator.userAgent);
+          
+          // En modo standalone o Android, preferir light theme
+          if (isStandalone || isAndroid) {
             theme = 'light';
           } else {
             theme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
