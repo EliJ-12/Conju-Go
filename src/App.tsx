@@ -11,7 +11,7 @@ import Home from "@/pages/Home";
 import SoloMode from "@/pages/SoloMode";
 import MemoryMode from "@/pages/MemoryMode";
 import KahootSolo from "@/pages/KahootSolo";
-import KahootMulti from "@/pages/KahootMulti";
+import CompleteMode from "@/pages/CompleteMode";
 import NotFound from "@/pages/not-found";
 
 function Router() {
@@ -27,7 +27,7 @@ function Router() {
       </Route>
       <Route path="/memory" component={MemoryMode} />
       <Route path="/kahoot-solo" component={KahootSolo} />
-      <Route path="/kahoot-multi" component={KahootMulti} />
+      <Route path="/complete" component={CompleteMode} />
       <Route component={NotFound} />
     </Switch>
   );

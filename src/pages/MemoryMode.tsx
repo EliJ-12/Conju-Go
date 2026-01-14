@@ -3,11 +3,13 @@ import { useLocation } from "wouter";
 import { ArrowLeft, RotateCcw, Clock } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { Card, CardContent } from "@/components/ui/card";
 import { MemoryCard } from "@/components/MemoryCard";
 import { GameStatsCard } from "@/components/ScoreDisplay";
 import { Confetti } from "@/components/Confetti";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import { generateMemoryCards } from "@/lib/gameUtils";
+import { frenchVerbs } from "@shared/verbs";
 import type { MemoryCard as MemoryCardType } from "@shared/schema";
 
 type GamePhase = "setup" | "playing" | "finished";
@@ -56,11 +58,11 @@ export default function MemoryMode() {
 
     if (flippedCards.length >= 2) return;
 
+    const newFlipped = [...flippedCards, cardId];
+    
     setCards((prev) =>
       prev.map((c) => (c.id === cardId ? { ...c, isFlipped: true } : c))
     );
-
-    const newFlipped = [...flippedCards, cardId];
     setFlippedCards(newFlipped);
 
     if (newFlipped.length === 2) {
@@ -70,18 +72,32 @@ export default function MemoryMode() {
       const [firstId, secondId] = newFlipped;
       const firstCard = cards.find((c) => c.id === firstId);
       const secondCard = cards.find((c) => c.id === secondId);
+      const isMatch = firstCard && secondCard && firstCard.verbId === secondCard.verbId;
 
-      if (firstCard && secondCard && firstCard.verbId === secondCard.verbId) {
-        setTimeout(() => {
-          setCards((prev) =>
-            prev.map((c) =>
-              c.id === firstId || c.id === secondId
-                ? { ...c, isMatched: true }
-                : c
-            )
-          );
-          setMatchedPairs((prev) => {
-            const newCount = prev + 1;
+      setTimeout(() => {
+        setCards((prev) => {
+          if (isMatch) {
+            // Pareja correcta: mantener giradas
+            return prev.map((c) => {
+              if (c.id === firstId || c.id === secondId) {
+                return { ...c, isMatched: true, isFlipped: true };
+              }
+              return c;
+            });
+          } else {
+            // Pareja incorrecta: voltear de nuevo
+            return prev.map((c) => {
+              if (c.id === firstId || c.id === secondId) {
+                return { ...c, isFlipped: false };
+              }
+              return c;
+            });
+          }
+        });
+
+        if (isMatch) {
+          setMatchedPairs((prevCount) => {
+            const newCount = prevCount + 1;
             if (newCount === totalPairs) {
               setShowConfetti(true);
               setTimeout(() => {
@@ -91,22 +107,11 @@ export default function MemoryMode() {
             }
             return newCount;
           });
-          setFlippedCards([]);
-          setIsChecking(false);
-        }, 500);
-      } else {
-        setTimeout(() => {
-          setCards((prev) =>
-            prev.map((c) =>
-              c.id === firstId || c.id === secondId
-                ? { ...c, isFlipped: false }
-                : c
-            )
-          );
-          setFlippedCards([]);
-          setIsChecking(false);
-        }, 1000);
-      }
+        }
+
+        setFlippedCards([]);
+        setIsChecking(false);
+      }, isMatch ? 500 : 1000);
     }
   };
 
@@ -179,18 +184,94 @@ export default function MemoryMode() {
   if (phase === "finished") {
     const accuracy = Math.round((totalPairs / moves) * 100);
     const score = Math.max(0, 1000 - moves * 20 - elapsedTime * 2);
+    const efficiency = moves > 0 ? Math.round((totalPairs / moves) * 100) : 0;
+    const combo = Math.max(0, totalPairs - (moves - totalPairs));
+
+    // Obtener las parejas de verbos resueltas
+    const matchedPairsList: Array<{ french: string; spanish: string }> = [];
+    const processedVerbIds = new Set<number>();
+    
+    cards.forEach((card) => {
+      if (card.isMatched && !processedVerbIds.has(card.verbId)) {
+        const verb = frenchVerbs.find((v) => v.id === card.verbId);
+        if (verb) {
+          const frenchCard = cards.find((c) => c.verbId === card.verbId && c.type === "french" && c.isMatched);
+          const spanishCard = cards.find((c) => c.verbId === card.verbId && c.type === "spanish" && c.isMatched);
+          if (frenchCard && spanishCard) {
+            matchedPairsList.push({
+              french: frenchCard.content,
+              spanish: spanishCard.content,
+            });
+            processedVerbIds.add(card.verbId);
+          }
+        }
+      }
+    });
 
     return (
       <div className="min-h-screen bg-background p-4">
-        <div className="container mx-auto max-w-md">
-          <GameStatsCard
-            title="Completado!"
-            score={score}
-            correctAnswers={totalPairs}
-            totalQuestions={moves}
-            bestStreak={accuracy}
-            timeElapsed={elapsedTime}
-          />
+        <div className="container mx-auto max-w-2xl">
+          <Card className="mb-4">
+            <CardContent className="pt-6">
+              <div className="text-center mb-6">
+                <h2 className="text-3xl font-display font-bold mb-2">¡Completado!</h2>
+                <p className="text-muted-foreground">Excelente trabajo</p>
+              </div>
+              
+              {combo > 0 && (
+                <div className="mb-4 p-3 bg-green-500/10 border border-green-500/30 rounded-lg text-center">
+                  <Badge variant="outline" className="bg-green-500/20 text-green-600 dark:text-green-400 mb-2">
+                    COMBO x{combo}
+                  </Badge>
+                  <p className="text-sm text-muted-foreground">Parejas consecutivas sin errores</p>
+                </div>
+              )}
+
+              <GameStatsCard
+                title=""
+                score={score}
+                correctAnswers={totalPairs}
+                totalQuestions={moves}
+                bestStreak={efficiency}
+                timeElapsed={elapsedTime}
+              />
+            </CardContent>
+          </Card>
+
+          {/* Mostrar parejas de verbos resueltas */}
+          {matchedPairsList.length > 0 && (
+            <Card className="mb-4">
+              <CardContent className="pt-6">
+                <h3 className="text-xl font-display font-bold mb-4 text-center">
+                  Parejas resueltas
+                </h3>
+                <div className="grid gap-3 sm:grid-cols-2">
+                  {matchedPairsList.map((pair, index) => (
+                    <div
+                      key={index}
+                      className="p-3 bg-muted/50 rounded-lg border border-border"
+                    >
+                      <div className="flex items-center justify-between gap-2">
+                        <div className="flex-1 text-center">
+                          <Badge variant="outline" className="mb-1 bg-blue-500/10 text-blue-600 dark:text-blue-400">
+                            FR
+                          </Badge>
+                          <p className="font-semibold text-sm">{pair.french}</p>
+                        </div>
+                        <div className="text-muted-foreground">=</div>
+                        <div className="flex-1 text-center">
+                          <Badge variant="outline" className="mb-1 bg-orange-500/10 text-orange-600 dark:text-orange-400">
+                            ES
+                          </Badge>
+                          <p className="font-semibold text-sm">{pair.spanish}</p>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </CardContent>
+            </Card>
+          )}
 
           <div className="mt-4 p-4 bg-muted rounded-lg text-center">
             <p className="text-sm text-muted-foreground">Tiempo total</p>

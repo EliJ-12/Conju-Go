@@ -14,6 +14,7 @@ interface TenseSelectorProps {
   showTimer?: boolean;
   showQuestionCount?: boolean;
   defaultQuestionCount?: number;
+  forceTimer?: boolean;
 }
 
 const tenseInfo: Record<Tense, { label: string; description: string; color: string }> = {
@@ -32,6 +33,11 @@ const tenseInfo: Record<Tense, { label: string; description: string; color: stri
     description: "Acciones continuas o habituales en el pasado",
     color: "bg-purple-500",
   },
+  "plus-que-parfait": {
+    label: "Plus-que-parfait",
+    description: "Acciones anteriores a otra acción pasada",
+    color: "bg-amber-500",
+  },
 };
 
 export function TenseSelector({
@@ -40,9 +46,10 @@ export function TenseSelector({
   showTimer = false,
   showQuestionCount = true,
   defaultQuestionCount = 10,
+  forceTimer = false,
 }: TenseSelectorProps) {
   const [selectedTenses, setSelectedTenses] = useState<Tense[]>(["présent"]);
-  const [useTimer, setUseTimer] = useState(false);
+  const [useTimer, setUseTimer] = useState(forceTimer);
   const [timeLimit, setTimeLimit] = useState(30);
   const [questionCount, setQuestionCount] = useState(defaultQuestionCount);
 
@@ -60,7 +67,7 @@ export function TenseSelector({
     const settings: GameSettings = {
       tenses: selectedTenses,
       questionCount,
-      timeLimit: showTimer && useTimer ? timeLimit : undefined,
+      timeLimit: showTimer && (useTimer || forceTimer) ? timeLimit : undefined,
     };
     onStart(settings);
   };
@@ -141,22 +148,24 @@ export function TenseSelector({
 
           {showTimer && (
             <div className="space-y-4">
-              <div className="flex items-center justify-between">
-                <Label
-                  htmlFor="timer-switch"
-                  className="text-base font-semibold"
-                >
-                  Modo contrarreloj
-                </Label>
-                <Switch
-                  id="timer-switch"
-                  checked={useTimer}
-                  onCheckedChange={setUseTimer}
-                  data-testid="switch-timer"
-                />
-              </div>
+              {!forceTimer && (
+                <div className="flex items-center justify-between">
+                  <Label
+                    htmlFor="timer-switch"
+                    className="text-base font-semibold"
+                  >
+                    Modo contrarreloj
+                  </Label>
+                  <Switch
+                    id="timer-switch"
+                    checked={useTimer}
+                    onCheckedChange={setUseTimer}
+                    data-testid="switch-timer"
+                  />
+                </div>
+              )}
 
-              {useTimer && (
+              {(useTimer || forceTimer) && (
                 <div className="animate-slide-up">
                   <Label className="text-sm text-muted-foreground mb-3 block">
                     Tiempo por pregunta: {timeLimit} segundos

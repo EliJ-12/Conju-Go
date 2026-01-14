@@ -3,7 +3,7 @@ import { z } from "zod";
 export const pronouns = ["je", "tu", "il/elle", "nous", "vous", "ils/elles"] as const;
 export type Pronoun = typeof pronouns[number];
 
-export const tenses = ["présent", "passé composé", "imparfait"] as const;
+export const tenses = ["présent", "passé composé", "imparfait", "plus-que-parfait"] as const;
 export type Tense = typeof tenses[number];
 
 export const verbTypes = ["regular", "irregular"] as const;
@@ -33,6 +33,7 @@ export interface Verb {
     présent: Conjugation;
     "passé composé": Conjugation;
     imparfait: Conjugation;
+    "plus-que-parfait": Conjugation;
   };
 }
 

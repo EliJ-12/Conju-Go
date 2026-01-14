@@ -1,11 +1,15 @@
+import { useState } from "react";
 import { useLocation } from "wouter";
-import { BookOpen, Clock, Puzzle, Zap, Users, Gamepad2 } from "lucide-react";
+import { BookOpen, Clock, Puzzle, Zap, PenTool, UserPlus } from "lucide-react";
 import { GameModeCard } from "@/components/GameModeCard";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { cn } from "@/lib/utils";
 
 export default function Home() {
   const [, setLocation] = useLocation();
+  const [selectedFilter, setSelectedFilter] = useState<string>("tiempos");
 
   const gameModes = [
     {
@@ -17,6 +21,16 @@ export default function Home() {
       color: "bg-blue-500",
       badges: ["Sin tiempo", "Practica libre"],
       path: "/solo",
+    },
+    {
+      id: "complete",
+      title: "Completar Verbos",
+      description:
+        "Completa la forma verbal correcta. Practica conjugaciones especificas con informacion del verbo, traduccion, tipo y grupo.",
+      icon: PenTool,
+      color: "bg-pink-500",
+      badges: ["Completar", "Practica"],
+      path: "/complete",
     },
     {
       id: "solo-timed",
@@ -48,28 +62,20 @@ export default function Home() {
       badges: ["Quiz", "4 opciones"],
       path: "/kahoot-solo",
     },
-    {
-      id: "kahoot-multi",
-      title: "Kahoot Multijugador",
-      description:
-        "Compite con amigos en tiempo real! Crea una sala o unete con un codigo para ver quien conjuga mejor.",
-      icon: Users,
-      color: "bg-pink-500",
-      badges: ["En linea", "Competitivo"],
-      path: "/kahoot-multi",
-    },
   ];
 
   return (
     <div className="min-h-screen bg-background">
       <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-        <div className="container mx-auto flex h-14 items-center justify-between gap-4 px-4">
-          <div className="flex items-center gap-2">
-            <Gamepad2 className="h-6 w-6 text-primary" />
-            <span className="font-display font-bold text-xl">Conjugo</span>
+        <div className="container mx-auto flex h-16 items-center justify-between gap-4 px-4 sm:px-6 lg:px-8">
+          <div className="flex items-center gap-3">
+            <div className="flex items-center justify-center w-10 h-10 bg-primary rounded-lg shadow-sm">
+              <UserPlus className="h-5 w-5 text-primary-foreground" />
+            </div>
+            <span className="font-display font-bold text-xl sm:text-2xl text-primary">Conjugo</span>
           </div>
-          <div className="flex items-center gap-2">
-            <Badge variant="secondary" className="hidden sm:flex">
+          <div className="flex items-center gap-3">
+            <Badge variant="secondary" className="hidden sm:flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium">
               150 verbos
             </Badge>
             <ThemeToggle />
@@ -77,33 +83,52 @@ export default function Home() {
         </div>
       </header>
 
-      <main className="container mx-auto px-4 py-8">
-        <section className="text-center mb-12">
-          <div className="relative rounded-2xl overflow-hidden mb-8">
-            <div className="absolute inset-0 bg-gradient-to-r from-primary/90 to-primary/70" />
-            <div className="relative z-10 py-12 px-6">
-              <h1 className="text-3xl sm:text-4xl lg:text-5xl font-display font-bold text-white mb-4">
+      <main className="container mx-auto px-4 sm:px-6 lg:px-8">
+        {/* Hero Banner */}
+        <section className="mb-12 mt-6 sm:mt-8">
+          <div className="relative rounded-3xl overflow-hidden shadow-xl">
+            <div className="absolute inset-0 bg-gradient-to-br from-primary via-primary to-primary/90" />
+            <div className="relative z-10 py-16 sm:py-20 px-6 sm:px-8 lg:px-12">
+              <h1 className="text-3xl sm:text-4xl lg:text-5xl xl:text-6xl font-display font-bold text-white mb-4 sm:mb-6 leading-tight">
                 Aprende verbos franceses jugando
               </h1>
-              <p className="text-lg text-white/90 max-w-2xl mx-auto">
-                Domina la conjugacion francesa con juegos interactivos. Practica el
-                <span className="font-semibold"> present</span>,
-                <span className="font-semibold"> passe compose</span> e
-                <span className="font-semibold"> imparfait</span> con 150 verbos esenciales.
+              <p className="text-base sm:text-lg lg:text-xl text-white/95 max-w-3xl leading-relaxed">
+                Domina la conjugacion francesa con juegos interactivos. Practica el{" "}
+                <span className="font-semibold">present</span>,{" "}
+                <span className="font-semibold">passe compose</span> e{" "}
+                <span className="font-semibold">imparfait</span> con 150 verbos esenciales.
               </p>
             </div>
           </div>
+        </section>
 
-          <div className="flex flex-wrap justify-center gap-3 mb-8">
-            <StatBadge label="Verbos" value="150" />
-            <StatBadge label="Tiempos" value="3" />
-            <StatBadge label="Modos" value="5" />
+        {/* Filter Pills */}
+        <section className="mb-8">
+          <div className="flex flex-wrap justify-center gap-3 mb-6">
+            <FilterPill
+              label="150 Verbos"
+              isActive={selectedFilter === "verbos"}
+              onClick={() => setSelectedFilter("verbos")}
+            />
+            <FilterPill
+              label="3 Tiempos"
+              isActive={selectedFilter === "tiempos"}
+              onClick={() => setSelectedFilter("tiempos")}
+            />
+            <FilterPill
+              label="5 Modos"
+              isActive={selectedFilter === "modos"}
+              onClick={() => setSelectedFilter("modos")}
+            />
           </div>
         </section>
 
-        <section>
-          <h2 className="text-2xl font-bold mb-6 text-center">Elige tu modo de juego</h2>
-          <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+        {/* Game Modes Section */}
+        <section className="mb-16">
+          <h2 className="text-2xl sm:text-3xl font-display font-bold mb-8 text-center">
+            Elige tu modo de juego
+          </h2>
+          <div className="grid gap-6 sm:gap-8 md:grid-cols-2 lg:grid-cols-3">
             {gameModes.map((mode) => (
               <GameModeCard
                 key={mode.id}
@@ -119,8 +144,9 @@ export default function Home() {
           </div>
         </section>
 
-        <section className="mt-16 text-center">
-          <h3 className="text-lg font-semibold text-muted-foreground mb-4">
+        {/* Tenses Section */}
+        <section className="mb-16 text-center">
+          <h3 className="text-lg font-semibold text-muted-foreground mb-6">
             Tiempos verbales disponibles
           </h3>
           <div className="flex flex-wrap justify-center gap-3">
@@ -140,18 +166,34 @@ export default function Home() {
   );
 }
 
-function StatBadge({ label, value }: { label: string; value: string }) {
+function FilterPill({
+  label,
+  isActive,
+  onClick,
+}: {
+  label: string;
+  isActive: boolean;
+  onClick: () => void;
+}) {
   return (
-    <div className="flex items-center gap-2 bg-card border rounded-full px-4 py-2">
-      <span className="font-display font-bold text-primary text-lg">{value}</span>
-      <span className="text-muted-foreground text-sm">{label}</span>
-    </div>
+    <Button
+      variant={isActive ? "default" : "outline"}
+      onClick={onClick}
+      className={cn(
+        "rounded-full px-6 py-2.5 font-medium transition-all duration-200",
+        isActive
+          ? "bg-primary text-primary-foreground shadow-md hover:bg-primary/90"
+          : "bg-secondary/50 text-foreground hover:bg-secondary border-secondary"
+      )}
+    >
+      {label}
+    </Button>
   );
 }
 
 function TenseBadge({ name, color }: { name: string; color: string }) {
   return (
-    <div className="flex items-center gap-2 bg-card border rounded-full px-4 py-2">
+    <div className="flex items-center gap-2 bg-card border rounded-full px-4 py-2 shadow-sm">
       <div className={`w-2 h-2 rounded-full ${color}`} />
       <span className="text-sm font-medium">{name}</span>
     </div>

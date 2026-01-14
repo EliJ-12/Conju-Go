@@ -25,20 +25,36 @@ export function generateKahootQuestion(verbs: Verb[], selectedTenses: Tense[]): 
 function generateWrongAnswers(verb: Verb, tense: Tense, pronoun: Pronoun, correctAnswer: string): string[] {
   const wrongAnswers: Set<string> = new Set();
   
-  const otherVerbs = frenchVerbs.filter(v => v.id !== verb.id && v.conjugations[tense][pronoun] !== "-");
-  for (const otherVerb of shuffleArray(otherVerbs).slice(0, 5)) {
-    const answer = otherVerb.conjugations[tense][pronoun];
-    if (answer !== correctAnswer && answer !== "-") {
-      wrongAnswers.add(answer);
-    }
-  }
-  
+  // Prioridad 1: Mismo verbo, diferente persona (más similar)
   const pronouns: Pronoun[] = ["je", "tu", "il/elle", "nous", "vous", "ils/elles"];
   for (const p of shuffleArray(pronouns)) {
     if (p !== pronoun) {
       const answer = verb.conjugations[tense][p];
-      if (answer !== correctAnswer && answer !== "-" && !wrongAnswers.has(answer)) {
+      if (answer && answer !== "-" && answer !== correctAnswer && !wrongAnswers.has(answer)) {
         wrongAnswers.add(answer);
+      }
+    }
+  }
+  
+  // Prioridad 2: Mismo verbo, diferente tiempo verbal (similar)
+  const tenses: Tense[] = ["présent", "passé composé", "imparfait"];
+  for (const t of shuffleArray(tenses)) {
+    if (t !== tense && verb.conjugations[t] && verb.conjugations[t][pronoun]) {
+      const answer = verb.conjugations[t][pronoun];
+      if (answer && answer !== "-" && answer !== correctAnswer && !wrongAnswers.has(answer)) {
+        wrongAnswers.add(answer);
+      }
+    }
+  }
+  
+  // Prioridad 3: Diferentes verbos (menos similar, solo si necesitamos más opciones)
+  if (wrongAnswers.size < 3) {
+    const otherVerbs = frenchVerbs.filter(v => v.id !== verb.id && v.conjugations[tense] && v.conjugations[tense][pronoun] !== "-");
+    for (const otherVerb of shuffleArray(otherVerbs).slice(0, 5)) {
+      const answer = otherVerb.conjugations[tense][pronoun];
+      if (answer && answer !== "-" && answer !== correctAnswer && !wrongAnswers.has(answer)) {
+        wrongAnswers.add(answer);
+        if (wrongAnswers.size >= 3) break;
       }
     }
   }

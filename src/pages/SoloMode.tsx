@@ -172,9 +172,10 @@ export default function SoloMode({ timed = false }: SoloModeProps) {
           <TenseSelector
             onStart={handleStart}
             onBack={() => setLocation("/")}
-            showTimer={timed}
+            showTimer={true}
             showQuestionCount={true}
             defaultQuestionCount={10}
+            forceTimer={timed}
           />
         </div>
       </div>
