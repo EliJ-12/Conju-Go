@@ -2257,9 +2257,3 @@ export function getRandomVerb(): Verb {
   const filteredVerbs = frenchVerbs.filter(v => v.conjugations.présent.je !== "-");
   return filteredVerbs[Math.floor(Math.random() * filteredVerbs.length)];
 }
-
-export function getRandomVerbs(count: number): Verb[] {
-  const filteredVerbs = frenchVerbs.filter(v => v.conjugations.présent.je !== "-");
-  const shuffled = [...filteredVerbs].sort(() => Math.random() - 0.5);
-  return shuffled.slice(0, Math.min(count, filteredVerbs.length));
-}
