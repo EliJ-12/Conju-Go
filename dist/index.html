@@ -16,6 +16,7 @@
   <link rel="apple-touch-icon" sizes="72x72" href="/favicon.png" />
   <link rel="apple-touch-icon" sizes="57x57" href="/favicon.png" />
   <meta name="theme-color" content="#3b82f6" />
+  <meta name="theme-color" content="#1e40af" media="(prefers-color-scheme: dark)" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="default" />
   <meta name="apple-mobile-web-app-title" content="Conjugo" />
@@ -23,10 +24,37 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta name="description" content="Aprende verbos franceses jugando. Domina la conjugación francesa con juegos interactivos." />
   <title>Conjugo - Aprende verbos franceses jugando</title>
+  <script>
+    // Aplicar tema inmediatamente antes de que se renderice la página
+    (function() {
+      var theme = 'light';
+      try {
+        var stored = localStorage.getItem('theme');
+        if (stored) {
+          theme = stored;
+        } else {
+          // Detectar modo standalone
+          var isStandalone = window.matchMedia('(display-mode: standalone)').matches || 
+                           window.navigator.standalone === true;
+          if (isStandalone) {
+            theme = 'light';
+          } else {
+            theme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+          }
+        }
+      } catch (e) {
+        theme = 'light';
+      }
+      
+      if (theme === 'dark') {
+        document.documentElement.classList.add('dark');
+      }
+    })();
+  </script>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;500;600;700&family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
-  <script type="module" crossorigin src="/assets/index-CGN8Vj4U.js"></script>
+  <script type="module" crossorigin src="/assets/index-qaM5TNJ9.js"></script>
   <link rel="stylesheet" crossorigin href="/assets/index-V7JMdN-5.css">
 </head>
 <body>
