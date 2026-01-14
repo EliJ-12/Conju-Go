@@ -18,6 +18,16 @@ export default defineConfig({
   build: {
     outDir: 'dist',
     emptyOutDir: true,
+    rollupOptions: {
+      output: {
+        assetFileNames: (assetInfo) => {
+          if (assetInfo.name === 'A2.png') {
+            return 'A2.png';
+          }
+          return 'assets/[name]-[hash][extname]';
+        }
+      }
+    }
   },
   
   server: {
@@ -26,4 +36,6 @@ export default defineConfig({
       deny: ["**/.*"],
     },
   },
+  
+  publicDir: false, // Desactivar publicDir para controlar manualmente los assets
 });
