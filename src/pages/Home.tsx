@@ -1,15 +1,12 @@
-import { useState } from "react";
 import { useLocation } from "wouter";
 import { BookOpen, Clock, Puzzle, Zap, PenTool, UserPlus } from "lucide-react";
 import { GameModeCard } from "@/components/GameModeCard";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 
 export default function Home() {
   const [, setLocation] = useLocation();
-  const [selectedFilter, setSelectedFilter] = useState<string>("tiempos");
 
   const gameModes = [
     {
@@ -95,33 +92,14 @@ export default function Home() {
               <p className="text-base sm:text-lg lg:text-xl text-white/95 max-w-3xl leading-relaxed">
                 Domina la conjugacion francesa con juegos interactivos. Practica el{" "}
                 <span className="font-semibold">present</span>,{" "}
-                <span className="font-semibold">passe compose</span> e{" "}
-                <span className="font-semibold">imparfait</span> con 150 verbos esenciales.
+                <span className="font-semibold">passe compose</span>,{" "}
+                <span className="font-semibold">imparfait</span> y{" "}
+                <span className="font-semibold">plus-que-parfait</span> con +150 verbos esenciales.
               </p>
             </div>
           </div>
         </section>
 
-        {/* Filter Pills */}
-        <section className="mb-8">
-          <div className="flex flex-wrap justify-center gap-3 mb-6">
-            <FilterPill
-              label="150 Verbos"
-              isActive={selectedFilter === "verbos"}
-              onClick={() => setSelectedFilter("verbos")}
-            />
-            <FilterPill
-              label="3 Tiempos"
-              isActive={selectedFilter === "tiempos"}
-              onClick={() => setSelectedFilter("tiempos")}
-            />
-            <FilterPill
-              label="5 Modos"
-              isActive={selectedFilter === "modos"}
-              onClick={() => setSelectedFilter("modos")}
-            />
-          </div>
-        </section>
 
         {/* Game Modes Section */}
         <section className="mb-16">
@@ -153,6 +131,7 @@ export default function Home() {
             <TenseBadge name="Present d'indicatif" color="bg-blue-500" />
             <TenseBadge name="Passe compose" color="bg-green-500" />
             <TenseBadge name="Imparfait" color="bg-purple-500" />
+            <TenseBadge name="Plus-que-parfait" color="bg-orange-500" />
           </div>
         </section>
       </main>
@@ -163,31 +142,6 @@ export default function Home() {
         </div>
       </footer>
     </div>
-  );
-}
-
-function FilterPill({
-  label,
-  isActive,
-  onClick,
-}: {
-  label: string;
-  isActive: boolean;
-  onClick: () => void;
-}) {
-  return (
-    <Button
-      variant={isActive ? "default" : "outline"}
-      onClick={onClick}
-      className={cn(
-        "rounded-full px-6 py-2.5 font-medium transition-all duration-200",
-        isActive
-          ? "bg-primary text-primary-foreground shadow-md hover:bg-primary/90"
-          : "bg-secondary/50 text-foreground hover:bg-secondary border-secondary"
-      )}
-    >
-      {label}
-    </Button>
   );
 }
 
